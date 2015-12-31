@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="data"
+            type="com.chaochuandea.lceview.inner.FooterEntity"/>
+    </data>
+    <FrameLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="60dp">
+        <ProgressBar
+            android:layout_width="50dp"
+            android:id="@+id/progress"
+            android:layout_gravity="center"
+            android:indeterminateDrawable="@drawable/frame_loading"
+            android:visibility="@{data.isLoading?View.VISIBLE:View.INVISIBLE}"
+            android:layout_height="50dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:text="加载完成"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:id="@+id/success"
+            android:visibility="@{data.isSuccess?View.VISIBLE:View.INVISIBLE}"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:text="加载失败，点击重试"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:id="@+id/error"
+            android:visibility="@{data.isError?View.VISIBLE:View.INVISIBLE}"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</layout>

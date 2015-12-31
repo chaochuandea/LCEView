@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="lce_recycler">
+        <attr name="shouldload_onpage_create" format="boolean" />
+        <attr name="had_loadmore" format="boolean"/>
+        <attr name="had_refresh" format="boolean"/>
+        <attr name="loading_layout" format="integer"/>
+        <attr name="error_layout" format="integer"/>
+        <attr name="url" format="string"/>
+        <attr name="loading_footer" format="integer"/>
+        <attr name="empty_layout" format="integer"/>
+    </declare-styleable>
+</resources>

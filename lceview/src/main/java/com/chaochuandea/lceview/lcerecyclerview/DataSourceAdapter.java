@@ -10,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -216,6 +215,10 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
                 });
             }
         }else{
+            Controller controller = mv.getController(getItemViewType(position));
+            if (controller!=null){
+                controller.bind(holder,deals.get(position),mv.getModel(getItemViewType(position)),position);
+            }
             onBind(holder,deals.get(position),mv.getModel(getItemViewType(position)),position);
         }
 

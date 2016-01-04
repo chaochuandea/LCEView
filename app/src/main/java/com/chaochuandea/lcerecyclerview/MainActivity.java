@@ -85,7 +85,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void getViewTypeAndLayout(MV<Class, Integer> mv) {
                 //item 数据和layout 的对应关系
-                mv.with(MyItem.class,R.layout.item)
+                mv.with(MyItem.class, R.layout.item, new Controller<MyItem>() {
+                    @Override
+                    public void bind(BindingHolder holder, MyItem data, Class<MyItem> data_type, int position) {
+                        ItemBinding binding = (ItemBinding) holder.getBinding();
+                        binding.face.setText(data.getFace());
+                    }
+                })
                 .with(HeaderEntity.class,R.layout.header);
             }
 
@@ -98,15 +104,6 @@ public class MainActivity extends AppCompatActivity {
                     deals.addAll(myDataEntityts.get(i).getData());
                 }
                 return deals;
-            }
-
-            @Override
-            public void onBind(BindingHolder holder, Object data, Class data_type, int position) {
-                if (data instanceof MyItem){
-                    MyItem item = (MyItem) data;
-                    ItemBinding itemBinding = (ItemBinding) holder.getBinding();
-                    itemBinding.face.setText(item.getFace());
-                }
             }
         });
     }

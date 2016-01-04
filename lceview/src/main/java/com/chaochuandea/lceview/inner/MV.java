@@ -13,6 +13,8 @@ public class MV<Model,Layout>{
 
     private HashMap<Integer,MODEL_LAYOUT> viewTypeMap = new HashMap<>();
 
+    private HashMap<Integer,Controller> controlerHashMap = new HashMap<>();
+
     public static MV<Class,Integer> init(){
         return new MV<>();
     }
@@ -48,6 +50,17 @@ public class MV<Model,Layout>{
         modelAndViews.add(model_layout);
         int viewtype = model.getCanonicalName().hashCode();
         viewTypeMap.put(viewtype,model_layout);
+        controlerHashMap.put(viewtype,null);
+        return (MV<Class, Integer>) this;
+    }
+    public <T> MV<Class,Integer> with(Class<T> model,Integer layout,Controller<T> controler){
+        MODEL_LAYOUT model_layout = new MODEL_LAYOUT();
+        model_layout.setLayout(layout);
+        model_layout.setModel(model);
+        modelAndViews.add(model_layout);
+        int viewtype = model.getCanonicalName().hashCode();
+        viewTypeMap.put(viewtype,model_layout);
+        controlerHashMap.put(viewtype,controler);
         return (MV<Class, Integer>) this;
     }
 
@@ -59,5 +72,7 @@ public class MV<Model,Layout>{
         return viewTypeMap.get(viewtype).getLayout();
     }
 
-
+    public Controller getController(int viewtype){
+        return controlerHashMap.get(viewtype);
+    }
 }

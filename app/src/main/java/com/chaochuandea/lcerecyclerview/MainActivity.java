@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.chaochuandea.lcerecyclerview.databinding.ItemBinding;
+import com.chaochuandea.lcerecyclerview.databinding.OtherItemBinding;
 import com.chaochuandea.lceview.inner.*;
 import com.chaochuandea.lceview.inner.Error;
 import com.chaochuandea.lceview.lcerecyclerview.BindingHolder;
@@ -83,29 +84,78 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void getViewTypeAndLayout(MV<Class, Integer> mv) {
-                //item 数据和layout 的对应关系
-                mv.with(MyItem.class, R.layout.item, new Controller<MyItem>() {
-                    @Override
-                    public void bind(BindingHolder holder, MyItem data, Class<MyItem> data_type, int position) {
-                        ItemBinding binding = (ItemBinding) holder.getBinding();
-                        binding.face.setText(data.getFace());
-                    }
-                })
-                .with(HeaderEntity.class,R.layout.header);
-            }
-
-            @Override
-            public List<Object> onDataChange(List<MyDataEntityt> myDataEntityts) {
-                List<Object> deals = new ArrayList<Object>();
-
-                deals.add(new HeaderEntity());
+            public void getMVC(List<MyDataEntityt> myDataEntityts, DealCenter dealCenter) {
                 for (int i = 0; i < myDataEntityts.size(); i++) {
-                    deals.addAll(myDataEntityts.get(i).getData());
+                    dealCenter.add(new ModelName<HeaderEntity>("header",new HeaderEntity()),R.layout.header);
+                    dealCenter.add(new ItemContent(myDataEntityts.get(i).getData()));
+                    dealCenter.add(new OtherContent(myDataEntityts.get(i).getData()));
+
                 }
-                return deals;
             }
         });
+    }
+    public class OtherContent extends MVC<MyItem>{
+
+        public OtherContent(MyItem data) {
+            super(data);
+        }
+
+        public OtherContent(List<MyItem> datas) {
+            super(datas);
+        }
+
+        @Override
+        public String getName() {
+            return "other";
+        }
+
+        @Override
+        public Integer getView() {
+            return R.layout.other_item;
+        }
+
+        @Override
+        public Controller<MyItem> getController() {
+            return new Controller<MyItem>() {
+                @Override
+                public void bind(BindingHolder holder, MyItem data, Class<MyItem> data_type, int position) {
+                    OtherItemBinding binding = (OtherItemBinding) holder.getBinding();
+                    binding.face.setText("other--"+data.getFace());
+                }
+            };
+        }
+    }
+
+    public class ItemContent extends MVC<MyItem>{
+
+        public ItemContent(MyItem data) {
+            super(data);
+        }
+
+        public ItemContent(List<MyItem> datas) {
+            super(datas);
+        }
+
+        @Override
+        public String getName() {
+            return "content";
+        }
+
+        @Override
+        public Integer getView() {
+            return R.layout.item;
+        }
+
+        @Override
+        public Controller<MyItem> getController() {
+            return new Controller<MyItem>() {
+                @Override
+                public void bind(BindingHolder holder, MyItem data, Class<MyItem> data_type, int position) {
+                    ItemBinding binding = (ItemBinding) holder.getBinding();
+                    binding.face.setText(data.getFace());
+                }
+            };
+        }
     }
     public class HeaderEntity{
 

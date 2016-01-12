@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="data"
+            type="com.chaochuandea.lcerecyclerview.MainActivity.MyItem"/>
+    </data>
+    <LinearLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+       >
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="@{data.name}"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:id="@+id/face"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="match_parent"
+            android:background="#a2a2a2"
+            android:layout_height="0.5dp"/>
+    </LinearLayout>
+</layout>

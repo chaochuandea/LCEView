@@ -1,5 +1,7 @@
 package com.chaochuandea.lceview.inner;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,12 +11,11 @@ import java.util.List;
  */
 public class MV<Model,Layout>{
 
-    private  List<MODEL_LAYOUT> modelAndViews = new ArrayList<>();
+    private List<MODEL_LAYOUT> modelAndViews = new ArrayList<>();
 
     private HashMap<Integer,MODEL_LAYOUT> viewTypeMap = new HashMap<>();
-
     private HashMap<Integer,Controller> controlerHashMap = new HashMap<>();
-
+    private List<Class> classes = new ArrayList<>();
     public static MV<Class,Integer> init(){
         return new MV<>();
     }
@@ -43,24 +44,27 @@ public class MV<Model,Layout>{
         }
     }
 
-    public MV<Class,Integer> with(Class model,Integer layout){
+
+    public  MV<Class,Integer> with(ModelName model,Integer layout){
         MODEL_LAYOUT model_layout = new MODEL_LAYOUT();
         model_layout.setLayout(layout);
-        model_layout.setModel(model);
+        model_layout.setModel(model.getClass());
         modelAndViews.add(model_layout);
-        int viewtype = model.getCanonicalName().hashCode();
+        int viewtype = model.getName().hashCode();
         viewTypeMap.put(viewtype,model_layout);
+        classes.add(model.getClass());
         controlerHashMap.put(viewtype,null);
         return (MV<Class, Integer>) this;
     }
-    public <T> MV<Class,Integer> with(Class<T> model,Integer layout,Controller<T> controler){
+    public <T>  MV<Class,Integer> with(ModelName<T> model,Integer layout,Controller<T> controler){
         MODEL_LAYOUT model_layout = new MODEL_LAYOUT();
         model_layout.setLayout(layout);
-        model_layout.setModel(model);
+        model_layout.setModel(model.getClass());
         modelAndViews.add(model_layout);
-        int viewtype = model.getCanonicalName().hashCode();
+        int viewtype = model.getName().hashCode();
         viewTypeMap.put(viewtype,model_layout);
         controlerHashMap.put(viewtype,controler);
+        classes.add(model.getClass());
         return (MV<Class, Integer>) this;
     }
 
@@ -69,10 +73,13 @@ public class MV<Model,Layout>{
     }
 
     public Integer getLayout(int viewtype){
+        if (viewTypeMap.get(viewtype) == null){
+            Log.e("LCE", "all class-----" + classes.toString());
+        }
         return viewTypeMap.get(viewtype).getLayout();
     }
-
     public Controller getController(int viewtype){
         return controlerHashMap.get(viewtype);
     }
+
 }

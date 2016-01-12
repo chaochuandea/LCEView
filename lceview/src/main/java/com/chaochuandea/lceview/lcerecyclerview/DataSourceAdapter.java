@@ -31,7 +31,7 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
 
 
     MV<Class,Integer> mv = MV.init();
-    List<Object> deals = new ArrayList<>();
+    List<ModelName> deals = new ArrayList<>();
     List<DataSource.RequestDataCallBack<ResponseFromNetWork>> requestDataCallBacks = new ArrayList<>();
     RecyclerView recycle;
 
@@ -54,7 +54,8 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
     }
 
     public DataSourceAdapter(){
-        getViewTypeAndLayout(mv);
+
+//        getViewTypeAndLayout(mv);
     }
 
     public void refresh(){
@@ -127,7 +128,7 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
         responseFromNetWorkList.add(responseFromNetWork);
         deals = onDataChange(responseFromNetWorkList);
         if (had_footer&&deals.size()>0){
-            deals.add(deals.size(),footer_entity);
+            deals.add(deals.size(),new ModelName<FooterEntity>("footer",footer_entity));
         }
         notifyDataSetChanged();
     }
@@ -136,19 +137,26 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
         responseFromNetWorkList.addAll(list);
         deals = onDataChange(responseFromNetWorkList);
         if (had_footer&&deals.size()>0){
-            deals.add(deals.size(),footer_entity);
+            deals.add(deals.size(),new ModelName<FooterEntity>("footer",footer_entity));
         }
         notifyDataSetChanged();
     }
 
-    public abstract void getViewTypeAndLayout(MV<Class,Integer> mv);
+//    public abstract void getViewTypeAndLayout(MV<Class,Integer> mv);
 
-    public abstract List<Object> onDataChange(List<ResponseFromNetWork> responseFromNetWorkList);
+    public  List<ModelName> onDataChange(List<ResponseFromNetWork> responseFromNetWorkList){
+        DealCenter dealCenter = new DealCenter(mv);
+        getMVC(responseFromNetWorkList,dealCenter);
+
+        return dealCenter.getDeals();
+    };
+
+    public abstract void getMVC(List<ResponseFromNetWork> responseFromNetWorkList,DealCenter dealCenter);
 
 
     public void setFooter(boolean had_footer,int footer_layout_id){
         if (had_footer){
-            mv.with(footer_entity.getClass(), footer_layout_id);
+            mv.with(new ModelName<FooterEntity>("footer",footer_entity), footer_layout_id);
         }
         this.had_footer = had_footer;
         this.footer_layout_id = footer_layout_id;
@@ -170,7 +178,7 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
 
     @Override
     public int getItemViewType(int position) {
-        return deals.get(position).getClass().getCanonicalName().hashCode();
+        return deals.get(position).getName().hashCode();
     }
 
 
@@ -180,7 +188,7 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
     public void onBindViewHolder(BindingHolder holder,final int position) {
         try {
             try {
-                holder.getBinding().setVariable(getBRClass().getDeclaredField("data").getInt(getBRClass().newInstance()), deals.get(position));;
+                holder.getBinding().setVariable(getBRClass().getDeclaredField("data").getInt(getBRClass().newInstance()), deals.get(position).getExtra());;
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (InstantiationException e) {
@@ -217,11 +225,10 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
         }else{
             Controller controller = mv.getController(getItemViewType(position));
             if (controller!=null){
-                controller.bind(holder,deals.get(position),mv.getModel(getItemViewType(position)),position);
+                controller.bind(holder,deals.get(position).getExtra(),mv.getModel(getItemViewType(position)),position);
             }
-            onBind(holder,deals.get(position),mv.getModel(getItemViewType(position)),position);
+            onBind(holder,deals.get(position).getExtra(),mv.getModel(getItemViewType(position)),position);
         }
-
     }
 
     public void onBind(BindingHolder holder,Object data,Class data_type,int position){

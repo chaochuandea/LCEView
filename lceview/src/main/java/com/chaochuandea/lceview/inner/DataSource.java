@@ -11,7 +11,7 @@ public interface  DataSource<T> {
 
     public interface RequestDataCallBack<T>{
         void success(T t);
-        void error(com.chaochuandea.lceview.inner.Error error);
+        void error(Error error);
 
 
     }

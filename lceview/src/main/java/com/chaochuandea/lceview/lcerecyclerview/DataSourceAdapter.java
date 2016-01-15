@@ -13,11 +13,15 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.chaochuandea.lceview.inner.FooterEntity;
 import com.chaochuandea.lceview.R;
+import com.chaochuandea.lceview.inner.Controller;
+import com.chaochuandea.lceview.inner.DataSource;
+import com.chaochuandea.lceview.inner.DealCenter;
+import com.chaochuandea.lceview.inner.FooterEntity;
+import com.chaochuandea.lceview.inner.MV;
+import com.chaochuandea.lceview.inner.ModelName;
 import com.chaochuandea.lceview.databinding.LceLoadingFooterBinding;
-import com.chaochuandea.lceview.inner.*;
-
+import com.chaochuandea.lceview.inner.Error;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +38,11 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
     List<ModelName> deals = new ArrayList<>();
     List<DataSource.RequestDataCallBack<ResponseFromNetWork>> requestDataCallBacks = new ArrayList<>();
     RecyclerView recycle;
+    private boolean refresh = false;
+
+    public boolean isRefresh() {
+        return refresh;
+    }
 
     public void setRecycle(RecyclerView recycle) {
         this.recycle = recycle;
@@ -72,9 +81,10 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
         }
         return mEntityClass;
     }
-    public void load(){
+    public void load(boolean isRefresh){
         footerCallBack.onFooterLoading();
-        getData(getUrl(), getParams(), getResult(), requestDataCallBack);
+        this.refresh = isRefresh;
+        getData(isRefresh,getUrl(), getParams(), getResult(), requestDataCallBack);
     }
 
     DataSource.RequestDataCallBack<ResponseFromNetWork> requestDataCallBack = new DataSource.RequestDataCallBack<ResponseFromNetWork>() {
@@ -87,7 +97,7 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
         }
 
         @Override
-        public void error(com.chaochuandea.lceview.inner.Error error) {
+        public void error(Error  error) {
             for (int i = 0; i < requestDataCallBacks.size(); i++) {
                 requestDataCallBacks.get(i).error(error);
             }
@@ -118,7 +128,7 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
         }
     };
 
-    public abstract void getData(String url,HashMap<String,Object> params,Class<ResponseFromNetWork> clazz, DataSource.RequestDataCallBack<ResponseFromNetWork> requestDataCallBack);
+    public abstract void getData(boolean refresh,String url,HashMap<String,Object> params,Class<ResponseFromNetWork> clazz, DataSource.RequestDataCallBack<ResponseFromNetWork> requestDataCallBack);
 
     public abstract String getUrl();
 
@@ -223,9 +233,12 @@ public abstract  class DataSourceAdapter<ResponseFromNetWork> extends RecyclerVi
                 });
             }
         }else{
-            Controller controller = mv.getController(getItemViewType(position));
-            if (controller!=null){
-                controller.bind(holder,deals.get(position).getExtra(),mv.getModel(getItemViewType(position)),position);
+            List<Controller>  controllers = mv.getController(getItemViewType(position));
+            for (int i = 0; i < controllers.size(); i++) {
+                Controller controller = controllers.get(i);
+                if (controller!=null){
+                    controller.bind(holder,deals.get(position).getExtra(),mv.getModel(getItemViewType(position)),position);
+                }
             }
             onBind(holder,deals.get(position).getExtra(),mv.getModel(getItemViewType(position)),position);
         }

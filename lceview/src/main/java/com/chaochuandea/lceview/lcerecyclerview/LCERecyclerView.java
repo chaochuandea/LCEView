@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
-
+import com.chaochuandea.lceview.inner.Error;
 import com.chaochuandea.lceview.R;
 import com.chaochuandea.lceview.inner.DataSource;
 
@@ -30,6 +30,7 @@ public class LCERecyclerView<Result> extends FrameLayout implements SwipeRefresh
     private boolean should_load_on_page_create = false;
     private boolean had_loadmore = false;
     private boolean had_refresh = false;
+    private boolean finishLoadMore = false;
 
     private DataSourceAdapter adapter;
     private DataSource.RequestDataCallBack<Result> inner_RequestData_callBack;
@@ -44,9 +45,21 @@ public class LCERecyclerView<Result> extends FrameLayout implements SwipeRefresh
         init();
     }
 
+    public SwipeRefreshLayout getSwipeRefreshLayout() {
+        return swipeRefreshLayout;
+    }
+
     public void setHad_refresh(boolean had_refresh) {
         this.had_refresh = had_refresh;
         swipeRefreshLayout.setEnabled(had_refresh);
+    }
+
+    /**
+     * 用于设置是否加载了所有数据的方法，不在执行loadmore方法
+     * @param isLoadMore
+     */
+    public void finishLoadMore(boolean isLoadMore){
+        finishLoadMore = isLoadMore;
     }
 
     public boolean isHad_refresh() {
@@ -112,7 +125,7 @@ public class LCERecyclerView<Result> extends FrameLayout implements SwipeRefresh
             }
 
             @Override
-            public void error(com.chaochuandea.lceview.inner.Error error) {
+            public void error(Error error) {
                 shoError();
                 refresh = false;
                 requesting = false;
@@ -172,7 +185,7 @@ public class LCERecyclerView<Result> extends FrameLayout implements SwipeRefresh
             recyclerView.addOnScrollListener(new OnRcvScrollListener() {
                 @Override
                 public void onBottom() {
-                    if (!requesting) {
+                    if (!requesting&& !finishLoadMore) {
                         loadMore();
                     }
                 }
@@ -191,7 +204,8 @@ public class LCERecyclerView<Result> extends FrameLayout implements SwipeRefresh
     public void refresh(){
         refresh = true;
         requesting = true;
-        adapter.load();
+        finishLoadMore = false;
+        adapter.load(true);
     }
 
 
@@ -200,7 +214,7 @@ public class LCERecyclerView<Result> extends FrameLayout implements SwipeRefresh
             return;
         }
         requesting = true;
-        adapter.load();
+        adapter.load(false);
     }
 
     private void showLoading() {

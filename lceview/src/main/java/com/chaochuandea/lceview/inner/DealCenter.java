@@ -48,7 +48,7 @@ public class DealCenter {
     }
 
     public <T> void add(MVC<T> mvc){
-        mv.with(mvc.getModelAndName(), mvc.getView(),mvc.getController());
+        mv.with(mvc.getModelAndName(), mvc.getView(),mvc.getAllController());
         if (null!=mvc.getModelAndName().getExtra()){
             deals.add(mvc.getModelAndName());
         }

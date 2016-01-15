@@ -41,15 +41,16 @@ public class MainActivity extends AppCompatActivity {
 
         LCERecyclerView<MyDataEntityt> lceRecyclerView = (LCERecyclerView<MyDataEntityt>) findViewById(R.id.recyclerview);
         lceRecyclerView.setAdapter(new DataSourceAdapter<MyDataEntityt>() {
+
             @Override
-            public void getData(String url, HashMap<String, Object> params, Class<MyDataEntityt> clazz, final DataSource.RequestDataCallBack<MyDataEntityt> requestDataCallBack) {
+            public void getData(boolean refresh, String url, HashMap<String, Object> params, Class<MyDataEntityt> clazz,final DataSource.RequestDataCallBack<MyDataEntityt> requestDataCallBack) {
                 //获取数据的地方
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             Thread.sleep(3000);
-                           final  MyDataEntityt myDataEntityt = new MyDataEntityt();
+                            final  MyDataEntityt myDataEntityt = new MyDataEntityt();
                             List<MyItem> data = new ArrayList<MyItem>();
                             for (int i = 0; i < 5; i++) {
                                 MyItem item = new MyItem();
@@ -86,8 +87,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void getMVC(List<MyDataEntityt> myDataEntityts, DealCenter dealCenter) {
                 for (int i = 0; i < myDataEntityts.size(); i++) {
-                    dealCenter.add(new ModelName<HeaderEntity>("header",new HeaderEntity()),R.layout.header);
+
+                    dealCenter.add(new ModelName<HeaderEntity>("header", new HeaderEntity()), R.layout.header, new Controller<HeaderEntity>() {
+                        @Override
+                        public void bind(BindingHolder holder, HeaderEntity data, Class<HeaderEntity> data_type, int position) {
+
+                        }
+                    });
+
+
+
                     dealCenter.add(new ItemContent(myDataEntityts.get(i).getData()));
+
+
+
+
                     dealCenter.add(new OtherContent(myDataEntityts.get(i).getData()));
 
                 }

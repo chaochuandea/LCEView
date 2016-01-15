@@ -14,7 +14,7 @@ public class MV<Model,Layout>{
     private List<MODEL_LAYOUT> modelAndViews = new ArrayList<>();
 
     private HashMap<Integer,MODEL_LAYOUT> viewTypeMap = new HashMap<>();
-    private HashMap<Integer,Controller> controlerHashMap = new HashMap<>();
+    private HashMap<Integer,List<Controller>> controlerHashMap = new HashMap<>();
     private List<Class> classes = new ArrayList<>();
     public static MV<Class,Integer> init(){
         return new MV<>();
@@ -53,10 +53,24 @@ public class MV<Model,Layout>{
         int viewtype = model.getName().hashCode();
         viewTypeMap.put(viewtype,model_layout);
         classes.add(model.getClass());
-        controlerHashMap.put(viewtype,null);
+        controlerHashMap.put(viewtype, null);
         return (MV<Class, Integer>) this;
     }
+
     public <T>  MV<Class,Integer> with(ModelName<T> model,Integer layout,Controller<T> controler){
+        MODEL_LAYOUT model_layout = new MODEL_LAYOUT();
+        model_layout.setLayout(layout);
+        model_layout.setModel(model.getClass());
+        modelAndViews.add(model_layout);
+        int viewtype = model.getName().hashCode();
+        viewTypeMap.put(viewtype,model_layout);
+        List<Controller> controllers = new ArrayList<>();
+        controllers.add(controler);
+        controlerHashMap.put(viewtype, controllers);
+        classes.add(model.getClass());
+        return (MV<Class, Integer>) this;
+    }
+    public <T>  MV<Class,Integer> with(ModelName<T> model,Integer layout,List<Controller> controler){
         MODEL_LAYOUT model_layout = new MODEL_LAYOUT();
         model_layout.setLayout(layout);
         model_layout.setModel(model.getClass());
@@ -78,7 +92,7 @@ public class MV<Model,Layout>{
         }
         return viewTypeMap.get(viewtype).getLayout();
     }
-    public Controller getController(int viewtype){
+    public List<Controller> getController(int viewtype){
         return controlerHashMap.get(viewtype);
     }
 
